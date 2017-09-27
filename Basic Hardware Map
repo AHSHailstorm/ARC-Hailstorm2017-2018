@@ -1,0 +1,19 @@
+ARDWARE MAP
+  Motor Controllers:
+    - MCP4 = Motor controller plugged into port 4 of the core power module
+    - MCP6 = Motor controller plugged into port 5 of the core power module
+   
+  
+  Motors: 
+    - motorFrontR(6A) = Motor plugged into motor slot 1 of motor controller 6, front right wheel motor
+    - motorFrontL(6B) = Motor plugged into motor slot 2 of motor controller 6, front left wheel motor
+    - motorBackR(4A) = Motor plugged into motor slot 1 of motor controller 4, back left wheel motor
+    - motorBackL(4B) = Motor plugged into motor slot 2 of motor controller 4, back right wheel motor
+   
+
+CONTROL MAP
+  Controller 1 (Driver 1):
+    - Left Joystick = controls the left side wheel speed.
+    - Right Joystick = controls the right side wheel speed.
+    
+ 
