@@ -15,8 +15,8 @@ import com.qualcomm.robotcore.util.Range;
 
 public class HailstormBasicTeleOp2017_2018 extends OpMode {
 
-    private DcMotorController motorControllerP4;    // Motor Controller in port 1 of Core
-    private DcMotorController motorControllerP5;    // Motor Controller in port 2 of Core
+    private DcMotorController motorControllerP0;    // Motor Controller in port 1 of Core
+    private DcMotorController motorControllerP1;    // Motor Controller in port 2 of Core
 
     private DcMotor controller1_motorR;                         // port 1 in Motor Controller 1
     private DcMotor controller1_motorL;                         // port 2 in Motor Controller 1
@@ -33,8 +33,8 @@ public class HailstormBasicTeleOp2017_2018 extends OpMode {
 
         controller1_motorR = hardwareMap.dcMotor.get("motorFrontR");
         controller1_motorL = hardwareMap.dcMotor.get("motorFrontL");
-        controller2_motorR = hardwareMap.dcMotor.get("motorBack2");
-        controller2_motorL = hardwareMap.dcMotor.get("motorBack1");
+        controller2_motorR = hardwareMap.dcMotor.get("motorBackR");
+        controller2_motorL = hardwareMap.dcMotor.get("motorBackL");
 
         /*Setting channel modes*/
         /*controller1_motorR.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
