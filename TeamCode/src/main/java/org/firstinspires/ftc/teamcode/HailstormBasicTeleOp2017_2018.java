@@ -31,10 +31,10 @@ public class HailstormBasicTeleOp2017_2018 extends OpMode {
         motorControllerP2 = hardwareMap.dcMotorController.get("MCP1");
 
 
-        controller1_motorR = hardwareMap.dcMotor.get("motorFrontR");
-        controller1_motorL = hardwareMap.dcMotor.get("motorFrontL");
-        controller2_motorR = hardwareMap.dcMotor.get("motorBackR");
-        controller2_motorL = hardwareMap.dcMotor.get("motorBackL");
+        controller1_motorR = hardwareMap.dcMotor.get("frontR");
+        controller1_motorL = hardwareMap.dcMotor.get("frontL");
+        controller2_motorR = hardwareMap.dcMotor.get("backR");
+        controller2_motorL = hardwareMap.dcMotor.get("backL");
 
         /*Setting channel modes*/
         /*controller1_motorR.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
