@@ -1,220 +1,85 @@
 package org.firstinspires.ftc.teamcode;
-       import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
-       import com.qualcomm.robotcore.eventloop.opmode.Disabled;
-       import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
-       import com.qualcomm.robotcore.hardware.DcMotor;
-       import com.qualcomm.robotcore.hardware.DcMotorController;
-       import com.qualcomm.robotcore.util.ElapsedTime;
+
+import com.qualcomm.robotcore.eventloop.opmode.OpMode;
+import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
+import com.qualcomm.robotcore.hardware.DcMotor;
+import com.qualcomm.robotcore.hardware.DcMotorController;
+import com.qualcomm.robotcore.hardware.DcMotorSimple;
+import com.qualcomm.robotcore.hardware.Gamepad;
+import com.qualcomm.robotcore.util.Range;
 
 /**
-* Created by sprou on 12/1/2017.
+* BY ARC-Hailstorm
 */
-@Autonomous(name="basicAuto", group="Autonomous")
-public class BasicAuto extends LinearOpMode {
+
+@TeleOp(name="Basic TeleOp", group="TeleOp")
+
+public class HailstormBasicTeleOp2017_2018 extends OpMode {
 
    private DcMotorController motorControllerP4;    // Motor Controller in port 1 of Core
    private DcMotorController motorControllerP5;    // Motor Controller in port 2 of Core
    private DcMotorController motorControllerP3;
 
-   DcMotor motorRF;
-   DcMotor motorRB;
-   DcMotor motorLB;
-   DcMotor motorLF;
-
-
-   //DcMotor motor_arm;
+   private DcMotor motorFR;                         // port 1 in Motor Controller 1
+   private DcMotor motorFL;                         // port 2 in Motor Controller 1
+   private DcMotor motorBR;                         // port 1 in Motor Controller 2
+   private DcMotor motorBL;                         // port 2 in Motor Controller 2
+   private DcMotor motor_arm;
+   private DcMotor motor_slide;
 
    @Override
-   public void runOpMode() throws InterruptedException {
-            /* Initializing and mapping electronics*/
+   public void init() {
+       /* Initializing and mapping electronics*/
        motorControllerP4 = hardwareMap.dcMotorController.get("MCP4");
        motorControllerP5 = hardwareMap.dcMotorController.get("MCP5");
        motorControllerP3 = hardwareMap.dcMotorController.get("MCP3");
+//motor controller 3 motor 1 (linear slides)
 
-       telemetry.addData("Testing", "1");
+       motorFR = hardwareMap.dcMotor.get("frontR");
+       motorFL = hardwareMap.dcMotor.get("frontL");
+       motorBR = hardwareMap.dcMotor.get("backR");
+       motorBL = hardwareMap.dcMotor.get("backL");
+       motor_arm = hardwareMap.dcMotor.get("Arm");
+       motor_slide = hardwareMap.dcMotor.get("LinearSlide");
 
-       motorRF = hardwareMap.dcMotor.get("frontR");
-       motorRB = hardwareMap.dcMotor.get("frontL");
-       motorLB = hardwareMap.dcMotor.get("backR");
-       motorLF = hardwareMap.dcMotor.get("backL");
-       // motor_arm  = hardwareMap.dcMotor.get("Arm");
+       /*Setting channel modes*/
+       /*controller1_motorR.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+       controller1_motorL.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+       controller2_motorL.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+       controller2_motorR.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);*/
 
-       telemetry.addData("Testing", "2");
-       motorRF.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-       motorRB.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-       motorLB.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-       motorLF.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-       telemetry.addData("Testing", "3");
+       motorFL.setDirection(DcMotor.Direction.REVERSE);
+       motorBL.setDirection(DcMotor.Direction.REVERSE);
 
-       waitForStart();
 
-       telemetry.addData("Testing", "4");
-       DriveFowardDistance(1, 1);
-       DriveBackwardDistance(1, 1);
-       TurnLeftDistance(1, 10);
-       TurnRightDistance(1, 10);
 
    }
-       //we're assuming the robot's already positioned facing in the appropriate direction
-     /*  CloseArmDistance(we don't yet know the distance needed);*/
 
-   public void DriveFoward(double power) {
-       motorRF.setPower(power);
-       motorRB.setPower(power);
-       motorLB.setPower(power);
-       motorLF.setPower(power);
+   @Override
+   public void loop() {                                                                                                     //constant loop that rechecks about every 20ms
+       double GearRatio = 1;
+       double leftpower = Math.pow(gamepad1.right_stick_y * GearRatio, 3/*The power the value before is raised */)/2;     //sets a value for power equal to the opposite of the value of the joysticks for the left
+       double rightpower = Math.pow(gamepad1.left_stick_y * GearRatio, 3)/2;//sets a value for power equal to the value of the joysticks for the right
+       double armRot = gamepad2.right_stick_x;
+       double linearRot = gamepad2.left_stick_y;
+
+       leftpower = Range.clip(leftpower, -1, 1);//gamepad controllers have a value of 1 when you push it to its maximum foward
+       rightpower = Range.clip(rightpower, -1, 1); //range of power, min first then max
+       armRot = Range.clip(armRot,-1,1);
+       linearRot = Range.clip(linearRot,-1,1);
+
+       motorFR.setPower(rightpower);                    //connects the value for power to the actual power of the motors
+       motorFL.setPower(leftpower);
+       motorBL.setPower(leftpower);
+       motorBR.setPower(rightpower);
+       motor_arm.setPower(armRot);
+       motor_slide.setPower(linearRot);
+
+
+
+       telemetry.addData("LeftMotors", "Left Motor Power:" + leftpower);           //shows the data or text stated onto phone telemetry
+       telemetry.addData("RightMotors", "Right Motor Power:" + rightpower);
+       telemetry.addData("Arm Motor", "Motor Power: "+armRot);
+       telemetry.addData("Linear Motor", "Motor Power"+linearRot);
    }
-
-   public void DriveBackward(double power) {
-       motorRF.setPower(-power);
-       motorRB.setPower(power);
-       motorLB.setPower(power);
-       motorLF.setPower(-power);
-   }
-
-   public void TurnLeft(double power) {
-       motorRF.setPower(-power);
-       motorRB.setPower(-power);
-       motorLB.setPower(power);
-       motorLF.setPower(power);
-   }
-
-   public void TurnRight(double power) {
-       motorRF.setPower(power);
-       motorRB.setPower(power);
-       motorLB.setPower(-power);
-       motorLF.setPower(-power);
-   }
-
-   //public void CloseArm(double power)
-   //{
-   //motor_arm.setPower(power);//we MAY need to make this negative
-   //}
-   //public void OpenArm(double power)
-   //{
-   //motor_arm.setPower(-power);//we MAY need to make this positive
-   //}
-   public void DriveFowardDistance(double power, int distance) {
-       motorRF.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-       motorRB.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-       motorLB.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-       motorLF.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-
-       motorRF.setTargetPosition(distance);
-       motorRB.setTargetPosition(distance);
-       motorLB.setTargetPosition(distance);
-       motorLF.setTargetPosition(distance);
-
-       motorRF.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-       motorRB.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-       motorLB.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-       motorLF.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-
-       DriveFoward(power);
-
-       while (motorLF.isBusy() && motorRF.isBusy() && motorRB.isBusy() && motorLB.isBusy()) {
-
-       }
-   }
-
-   public void DriveBackwardDistance(double power, int distance) {
-       motorRF.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-       motorRB.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-       motorLB.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-       motorLF.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-
-       motorRF.setTargetPosition(distance);
-       motorRB.setTargetPosition(distance);
-       motorLB.setTargetPosition(distance);
-       motorLF.setTargetPosition(distance);
-
-       motorRF.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-       motorRB.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-       motorLB.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-       motorLF.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-
-       DriveBackward(power);
-
-       while (motorLF.isBusy() && motorRF.isBusy() && motorRB.isBusy() && motorLB.isBusy()) {
-
-       }
-   }
-
-   public void TurnLeftDistance(double power, int distance) {
-       motorRF.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-       motorRB.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-       motorLB.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-       motorLF.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-
-       motorRF.setTargetPosition(distance);
-       motorRB.setTargetPosition(distance);
-       motorLB.setTargetPosition(distance);
-       motorLF.setTargetPosition(distance);
-
-       motorRF.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-       motorRB.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-       motorLB.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-       motorLF.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-
-       TurnLeft(power);
-
-       while (motorLF.isBusy() && motorRF.isBusy() && motorRB.isBusy() && motorLB.isBusy()) {
-
-       }
-   }
-
-   public void TurnRightDistance(double power, int distance) {
-       motorRF.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-       motorRB.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-       motorLB.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-       motorLF.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-
-       motorRF.setTargetPosition(distance);
-       motorRB.setTargetPosition(distance);
-       motorLB.setTargetPosition(distance);
-       motorLF.setTargetPosition(distance);
-
-       motorRF.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-       motorRB.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-       motorLB.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-       motorLF.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-
-       TurnRight(power);
-
-       while (motorLF.isBusy() && motorRF.isBusy() && motorRB.isBusy() && motorLB.isBusy()) {
-
-       }
-
-   }
-   //public void OpenArmDistance(double power, int distance)//take note-you should never put >=full rotation
-   //{
-   //motor_arm.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-
-   //motor_arm.setTargetPosition(distance);
-
-   //motor_arm.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-
-   //OpenArm(power);
-
-   //while(motor_arm.isBusy())
-   //{
-
-   //}
-   //}
-   //public void CloseArmDistance(double power, int distance)//same goes as for above method
-   //{
-   //motor_arm.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-
-   //motor_arm.setTargetPosition(distance);
-
-   //motor_arm.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-
-   //CloseArm(power);
-
-   //while(motor_arm.isBusy())
-   //{
-
-   //}
-   //}
-   //@Override
 }
